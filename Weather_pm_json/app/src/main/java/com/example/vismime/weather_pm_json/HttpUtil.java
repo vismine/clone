@@ -9,6 +9,7 @@ import java.net.URL;
 
 /**
  * Created by vismime on 2017/8/23.
+ * 暂时没有用
  */
 
 public class HttpUtil {

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 public class MainActivity extends AppCompatActivity {
 
     Button get , post;
@@ -27,12 +28,9 @@ public class MainActivity extends AppCompatActivity {
         get = (Button) findViewById(R.id.get);
         post = (Button) findViewById(R.id.post);
         show = (EditText)findViewById(R.id.show);
-        TextView TextArea = (TextView)findViewById(R.id.city);
-        String textarea = TextArea.getText().toString();
-        TextView TextPm = (TextView)findViewById(R.id.pm);
-        String textpm = TextPm.getText().toString();
-        TextView TextTime = (TextView)findViewById(R.id.time);
-        String texttime = TextTime.getText().toString();
+        final TextView TextArea = (TextView)findViewById(R.id.city);
+        final TextView TextPm = (TextView)findViewById(R.id.pm);
+        final TextView TextTime = (TextView)findViewById(R.id.time);
         try {
             ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(),
                     PackageManager.GET_META_DATA);
@@ -46,9 +44,23 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void handleMessage(Message msg) {
                     if(msg.what==0x123){
-                        System.out.println(msg);
                         show.setText(msg.obj.toString());
-                        JSONObject dataJson = new JSONObject(msg);
+                        try {
+
+                            JSONArray jsonObjs = new JSONObject(msg.obj.toString()).getJSONArray("result");
+                            Log.i("取到JSONArray",">>>>>>>>>>>>");
+                            for(int i = 0; i < jsonObjs.length() ; i++) {
+                                JSONObject jsonObj = (JSONObject) jsonObjs.get(i);
+                                String city = jsonObj.getString("city");
+                                String pm = jsonObj.getString("PM2.5");
+                                String time = jsonObj.getString("time");
+                                TextArea.setText(city);
+                                TextPm.setText(pm);
+                                TextTime.setText(time);
+                            }
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             };
@@ -73,36 +85,5 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-    }
-}
-class AccessNetwork implements Runnable{
-    private String op ;
-    private String url;
-    private String params;
-    private Handler h;
-
-    public AccessNetwork(String op, String url, String params,Handler h) {
-        super();
-        this.op = op;
-        this.url = url;
-        this.params = params;
-        this.h = h;
-    }
-
-    @Override
-    public void run() {
-        Message m = new Message();
-        m.what = 0x123;
-        if(op.equals("GET")){
-            Log.i("iiiiiii","发送GET请求");
-            //m.obj = GetPostUtil.sendGet(url, params);
-            Log.i("iiiiiii",">>>>>>>>>>>>"+m.obj);
-        }
-        if(op.equals("POST")){
-            Log.i("iiiiiii","发送POST请求");
-            m.obj = GetPostUtil.sendPost(url, params);
-            Log.i("gggggggg",">>>>>>>>>>>>"+m.obj);
-        }
-        h.sendMessage(m);
     }
 }

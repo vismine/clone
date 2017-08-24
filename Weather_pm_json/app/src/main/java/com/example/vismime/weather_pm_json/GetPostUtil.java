@@ -87,6 +87,7 @@ public class GetPostUtil {
         String result = "";
         try
         {
+            //将访问路径转换为url
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
             URLConnection conn = realUrl.openConnection();
@@ -108,8 +109,10 @@ public class GetPostUtil {
             in = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
             String line;
+            //读取换行前的内容
             while ((line = in.readLine()) != null)
             {
+                //\n换行
                 result += "\n" + line;
             }
         }
